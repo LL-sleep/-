@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -126,6 +126,7 @@ body {
   white-space: pre-wrap;
 }
 .param-table tbody tr:hover { background: var(--hover); }
+.param-table tbody tr.added-by-user { border-left: 3px solid #27ae60; }
 .param-table tbody tr.highlight { background: var(--highlight); }
 .param-table td:first-child {
   font-family: 'Consolas', 'Courier New', monospace;
@@ -182,6 +183,87 @@ body {
   color: var(--text-dim);
   font-size: 0.8rem;
 }
+/* 鏆楄壊妯″紡 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a2e;
+    --card-bg: #16213e;
+    --text: #e0e0e0;
+    --text-dim: #8892b0;
+    --accent: #5dade2;
+    --border: #2a2a4a;
+    --hover: #1a2744;
+    --highlight: #3d3520;
+  }
+  .stat-card { background: #0f3460; }
+  .tab { background: #1a2744; color: #a0aec0; }
+  .tab:hover { background: #243b6a; color: #e0e0e0; }
+  .collapse-toggle { background: #1a2744; }
+  .collapse-toggle:hover { background: #243b6a; }
+}
+/* 杩斿洖椤堕儴鎸夐挳 */
+#backToTop {
+  display: none; position: fixed; bottom: 30px; right: 30px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--accent); color: #fff; border: none;
+  font-size: 1.4rem; cursor: pointer; z-index: 999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+#backToTop:hover { opacity: 0.85; }
+/* 瀵煎嚭鎸夐挳 */
+.export-btn {
+  padding: 6px 16px; border: 1px solid var(--accent);
+  border-radius: 6px; background: var(--card-bg); color: var(--accent);
+  font-size: 0.82rem; cursor: pointer; margin: 2px;
+  transition: all 0.2s;
+}
+.export-btn:hover { background: var(--accent); color: #fff; }
+/* 添加参数按钮 */
+#addParamBtn {
+  padding: 6px 16px; border: 1px solid #27ae60; border-radius: 6px;
+  background: #27ae60; color: #fff; font-size: 0.82rem; cursor: pointer;
+  margin: 2px; transition: all 0.2s;
+}
+#addParamBtn:hover { background: #219a52; }
+/* 添加参数弹窗 */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: var(--card-bg); border-radius: 12px; padding: 24px;
+  max-width: 500px; width: 90%; box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.modal-box h3 { margin: 0 0 16px; color: var(--text); font-size: 1.1rem; }
+.modal-box label { display: block; margin: 10px 0 4px; font-size: 0.85rem; color: var(--text-dim); }
+.modal-box input, .modal-box textarea {
+  width: 100%; padding: 8px 12px; border: 1px solid var(--border);
+  border-radius: 6px; font-size: 0.85rem; background: var(--bg); color: var(--text);
+  font-family: inherit; box-sizing: border-box;
+}
+.modal-box textarea { resize: vertical; min-height: 60px; }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.modal-btns button {
+  padding: 8px 20px; border: none; border-radius: 6px; font-size: 0.85rem; cursor: pointer;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-cancel { background: var(--border); color: var(--text); }
+.delete-param-btn {
+  background: none; border: none; color: #e74c3c; cursor: pointer;
+  font-size: 1rem; padding: 0 4px; opacity: 0.5; transition: opacity 0.2s;
+}
+.delete-param-btn:hover { opacity: 1; }
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: #27ae60; color: #fff; padding: 10px 24px; border-radius: 8px;
+  font-size: 0.9rem; z-index: 2000; opacity: 0; transition: opacity 0.3s;
+}
+.toast.show { opacity: 1; }
+/* 鎺掑簭鎸囩ず鍣?*/
+.sort-indicator { font-size: 0.7rem; margin-left: 4px; opacity: 0.5; }
+.sort-indicator.active { opacity: 1; }
+
 @media (max-width: 768px) {
   .container { padding: 10px; }
   .tab { font-size: 0.76rem; padding: 5px 10px; }
@@ -189,6 +271,7 @@ body {
 </style>
 </head>
 <body>
+
 <div class="container">
 <div class="header"><h1>WD 系列产品参数总表</h1><p>更新于 2026-06-11 15:11 · 8 个项目 · 1517 条参数</p></div>
 <div class="stats">
@@ -199,7 +282,7 @@ body {
 <span id="globalHint" style="display:block;font-size:0.82rem;color:var(--accent);margin:-2px 0 10px 4px;"></span>
 <div class="sticky-bar">
 <div class="tab-container">
-<button class="tab" onclick="showTab('MW100')">MW-100 (33)</button>
+<button class="tab active" onclick="showTab('MW100')">MW-100 (33)</button>
 <button class="tab" onclick="showTab('WD110')">WD-110 (82)</button>
 <button class="tab" onclick="showTab('WD210')">WD-210 (52)</button>
 <button class="tab" onclick="showTab('WD219G')">WD-219G (758)</button>
@@ -211,7 +294,24 @@ body {
 <input id="search" class="search-box" placeholder="输入关键词搜索参数..." data-pid="MW100">
 <span id="searchHint" style="display:block;font-size:0.8rem;color:var(--text-dim);margin:-6px 0 10px 4px;"></span>
 </div>
-<div class="content" id="MW100">
+
+<!-- 添加参数弹窗 -->
+<div class="modal-overlay" id="addParamModal">
+<div class="modal-box">
+<h3 id="modalTitle">添加参数</h3>
+<label>参数名</label><input id="newParamName" placeholder="如: DFTNEWPARAM">
+<label>范围/取值</label><input id="newParamRange" placeholder="如: 0~100">
+<label>含义说明</label><textarea id="newParamDesc" placeholder="参数说明..."></textarea>
+<label>补充/示例（可选）</label><input id="newParamExtra" placeholder="">
+<div class="modal-btns">
+<button class="btn-cancel" onclick="closeModal()">取消</button>
+<button class="btn-primary" onclick="saveParam()">确认添加</button>
+</div>
+</div>
+</div>
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+<div class="content active" id="MW100">
 <div class="table-wrap">
 <table id="tableMW100" class="param-table">
 <thead><tr>
@@ -6420,12 +6520,10 @@ DFTHELMETSUPPORTFUN =15</td>
 <td>DFTGPSHARDWARETYPE=6   //GPS使用千寻高精度模组
 DFTHIGHACPROTOCOL=1     //定位报文经纬度使用6字节
 GTGPSQXENABLE=2             //借车使用千寻服务，还车关闭千寻服务（GTGPSQXENABLE=1借还车都使用千寻服务）
-https://passport.qxwz.com/login?redirectUrl=https%3A%2F%2Ffindcm.my.qxwz.com%2Fdsk%3FsiId%3D938276
 
-客户线上运营账号：账户：13266834610  （王威）
+客户线上运营账号：[已移除]
 
-密码：UtNkxxKE
-千寻RTK服务账号：RTCMLOGINCONFIG=A4ac40ir3dg0:294d02fdb8d2f688:BG1101
+千寻RTK服务账号：RTCMLOGINCONFIG=[已移除]
 查询参数  QXSDKSTATE  查询有没有使用千寻SDK服务 0没有，1有
 注意：使用千寻RTK服务需要登录千寻平台，绑定终端TID才能使用千寻服务！
 （需要注意：服务实例需要根据情况选择对应的）</td>
@@ -6433,7 +6531,7 @@ https://passport.qxwz.com/login?redirectUrl=https%3A%2F%2Ffindcm.my.qxwz.com%2Fd
 <tr>
 <td></td>
 <td>中移RTK----目前暂时不用</td>
-<td>RTCMLOGINCONFIG=sjctvht0733:37st3ah6:RTCM33_GRCEJ
+<td>RTCMLOGINCONFIG=[已移除]
 PREAUTHTYPE=1005
 PREDOMAIN=120.253.226.97:8102
 查询参数  PREGPSCONAUTH=1:1:1 第一个1表示初始化成功，第二个1表示连接中移高精度平台成功，第三个1表示鉴权成功</td>
@@ -6444,7 +6542,7 @@ PREDOMAIN=120.253.226.97:8102
 <td>GPSSDKTYPE=1             //配置高精度类型，真点服务
 PREAUTHTYPE=1001
 PREDOMAIN=PNT.TRUE-POINT.COM:8801
-RTCMLOGINCONFIG=TBIT0002:muxsi1d3:RTCM33GRCEJ----注意这个每次都要申请新的
+RTCMLOGINCONFIG=[已移除]----注意这个每次都要申请新的
 PREGPSDEVICEID=TBIT
 DFTGPSHARDWARETYPE=6 
 DFTHIGHACPROTOCOL=1 
@@ -6521,7 +6619,7 @@ GPSSDKTYPE=1             //配置高精度类型，真点服务  （这个参数
 
 PREAUTHTYPE=1001
 PREDOMAIN=PNT.TRUE-POINT.COM:8801
-RTCMLOGINCONFIG=TBIT0512:kc673i8n:RTCM_CC  （每次都需要申请）
+RTCMLOGINCONFIG=[已移除]  （每次都需要申请）
 PREGPSDEVICEID=TBIT
 这几个参数是通过三元组的形式导进去，也可以手动配置</td>
 </tr>
@@ -6775,7 +6873,7 @@ WinSCP-6.3.4-Setup.exe
 登录FTP服务器：
 
 主机名：120.25.196.11 端口号：10059
-用户名：tbit 密码：tbit852741</td>
+用户名：[已移除] 密码：[已移除]</td>
 </tr>
 <tr>
 <td>蓝牙综测波特率</td>
@@ -11668,11 +11766,13 @@ L5 频段定位有效（已锁定）
 </tbody></table>
 </div>
 </div>
-<div class="footer">WD Series Parameter Reference · 2026-06-11 15:11</div>
+<button id="backToTop" title="返回顶部" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#9650;</button><div class="footer">Powered by WorkBuddy | Enhanced by Claude Code 2026-06-18 | WD Series Parameter Reference · 2026-06-11 15:11</div>
 </div>
+
 <script>
 var ALL_PIDS = [];
 
+// ===== Original WorkBuddy functions (preserved) =====
 function showTab(pid) {
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
@@ -11682,7 +11782,9 @@ function showTab(pid) {
   if (content) content.classList.add('active');
   var search = document.getElementById('search');
   if (search) { search.value = ''; search.dataset.pid = pid; }
-  filterRows(pid, ''); // clear local filter
+  filterRows(pid, '');
+  // Hash routing (new)
+  history.replaceState(null, '', '#' + pid);
 }
 
 function filterRows(pid, keyword) {
@@ -11691,7 +11793,6 @@ function filterRows(pid, keyword) {
   var tables = content.querySelectorAll('.param-table');
   var count = 0;
   var kw = keyword ? keyword.toLowerCase().trim() : '';
-
   tables.forEach(function(table) {
     var rows = table.querySelectorAll('tbody tr');
     rows.forEach(function(row) {
@@ -11708,16 +11809,11 @@ function filterRows(pid, keyword) {
       }
     });
   });
-
   var hint = document.getElementById('searchHint');
   if (hint) {
-    if (!kw) {
-      hint.textContent = '';
-    } else if (count > 0) {
-      hint.textContent = '找到 ' + count + ' 条匹配';
-    } else {
-      hint.textContent = '无匹配';
-    }
+    if (!kw) { hint.textContent = ''; }
+    else if (count > 0) { hint.textContent = 'Found ' + count + ' rows'; }
+    else { hint.textContent = 'No match'; }
   }
 }
 
@@ -11725,17 +11821,11 @@ function globalSearch(keyword) {
   var kw = keyword ? keyword.toLowerCase().trim() : '';
   var totalCount = 0;
   var projectHits = {};
-
   if (!kw) {
-    // Clear all filters, show all rows
-    ALL_PIDS.forEach(function(pid) {
-      showAllRows(pid);
-    });
+    ALL_PIDS.forEach(function(pid) { showAllRows(pid); });
     document.getElementById('globalHint').textContent = '';
     return;
   }
-
-  // Search across all projects
   ALL_PIDS.forEach(function(pid) {
     var content = document.getElementById(pid);
     if (!content) return;
@@ -11745,81 +11835,259 @@ function globalSearch(keyword) {
       var rows = table.querySelectorAll('tbody tr');
       rows.forEach(function(row) {
         var text = row.textContent.toLowerCase();
-        if (text.includes(kw)) {
-          row.style.display = '';
-          pcount++;
-        } else {
-          row.style.display = 'none';
-        }
+        if (text.includes(kw)) { row.style.display = ''; pcount++; }
+        else { row.style.display = 'none'; }
       });
     });
-    if (pcount > 0) {
-      projectHits[pid] = pcount;
-      totalCount += pcount;
-    }
+    if (pcount > 0) { projectHits[pid] = pcount; totalCount += pcount; }
   });
-
-  // Auto-switch to first matching project
   var firstHit = Object.keys(projectHits)[0];
   if (firstHit) {
     showTab(firstHit);
-    // Apply filter to this project (rows already filtered above)
     document.getElementById('search').value = kw;
   }
-
-  // Show global results
   var hint = document.getElementById('globalHint');
   var hits = Object.entries(projectHits).map(function(e) {
-    var pid = e[0];
-    var c = e[1];
-    // Convert pid back to display name
-    var display = document.querySelector('.tab[onclick*="' + pid + '"]');
-    var name = display ? display.textContent.split(' (')[0] : pid;
-    return name + ': ' + c;
+    var display = document.querySelector('.tab[onclick*="' + e[0] + '"]');
+    var name = display ? display.textContent.split(' (')[0] : e[0];
+    return name + ': ' + e[1];
   }).join(' / ');
-  if (totalCount > 0) {
-    hint.textContent = '全局 ' + totalCount + ' 条 → ' + hits;
-  } else {
-    hint.textContent = '无匹配';
-  }
+  hint.textContent = totalCount > 0 ? 'Global: ' + totalCount + ' - ' + hits : 'No match';
 }
 
 function showAllRows(pid) {
   var content = document.getElementById(pid);
   if (!content) return;
-  var tables = content.querySelectorAll('.param-table');
-  tables.forEach(function(table) {
-    var rows = table.querySelectorAll('tbody tr');
-    rows.forEach(function(row) {
-      row.style.display = '';
+  content.querySelectorAll('.param-table tbody tr').forEach(function(row) { row.style.display = ''; });
+}
+
+// ===== NEW: Column Sort =====
+var sortState = {};
+function sortTable(tableId, colIdx) {
+  var table = document.getElementById(tableId); if (!table) return;
+  var tbody = table.querySelector('tbody'); if (!tbody) return;
+  var rows = Array.from(tbody.querySelectorAll('tr'));
+  var key = tableId + '_' + colIdx;
+  var dir = sortState[key] === 'asc' ? 'desc' : 'asc';
+  sortState[key] = dir;
+  rows.sort(function(a, b) {
+    var aVal = (a.cells[colIdx] ? a.cells[colIdx].textContent : '').trim().toLowerCase();
+    var bVal = (b.cells[colIdx] ? b.cells[colIdx].textContent : '').trim().toLowerCase();
+    var aNum = parseFloat(aVal), bNum = parseFloat(bVal);
+    if (!isNaN(aNum) && !isNaN(bNum)) { aVal = aNum; bVal = bNum; }
+    if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+    if (aVal > bVal) return dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+  rows.forEach(function(row) { tbody.appendChild(row); });
+  updateSortIcons(tableId, colIdx, dir);
+}
+function makeHeadersSortable() {
+  document.querySelectorAll('.param-table').forEach(function(table) {
+    table.querySelectorAll('thead th').forEach(function(th, idx) {
+      th.style.cursor = 'pointer'; th.title = 'Click to sort';
+      var icon = document.createElement('span');
+      icon.style.cssText = 'font-size:0.7rem;margin-left:4px;opacity:0.5';
+      icon.textContent = ''; th.appendChild(icon);
+      th.addEventListener('click', function() { sortTable(table.id, idx); });
     });
   });
 }
+function updateSortIcons(tableId, activeCol, dir) {
+  var table = document.getElementById(tableId); if (!table) return;
+  table.querySelectorAll('thead th span').forEach(function(s) { s.textContent = ''; s.style.opacity = '0.5'; });
+  var activeTh = table.querySelectorAll('thead th')[activeCol];
+  if (activeTh) { var s = activeTh.querySelector('span');
+    if (s) { s.textContent = dir === 'asc' ? ' ^' : ' v'; s.style.opacity = '1'; } }
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Collect all project IDs
-  document.querySelectorAll('.content').forEach(function(c) {
-    ALL_PIDS.push(c.id);
+// ===== NEW: CSV Export =====
+function exportCSV(pid) {
+  var content = document.getElementById(pid); if (!content) return;
+  var csvLines = [];
+  content.querySelectorAll('.param-table').forEach(function(table) {
+    var headers = [];
+    table.querySelectorAll('thead th').forEach(function(th) { headers.push('"' + th.textContent.trim().replace(/"/g, '""') + '"'); });
+    csvLines.push(headers.join(','));
+    table.querySelectorAll('tbody tr').forEach(function(row) {
+      if (row.style.display === 'none') return;
+      var cells = [];
+      row.querySelectorAll('td').forEach(function(td) { cells.push('"' + td.textContent.trim().replace(/"/g, '""') + '"'); });
+      csvLines.push(cells.join(','));
+    });
   });
+  var BOM = String.fromCharCode(0xFEFF);
+  var blob = new Blob([BOM + csvLines.join('\n')], {type: 'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href = url; a.download = pid + '.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+function addExportButtons() {
+  var stickyBar = document.querySelector('.sticky-bar'); if (!stickyBar) return;
+  var div = document.createElement('div');
+  div.style.cssText = 'margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;';
+  ALL_PIDS.forEach(function(pid) {
+    var btn = document.createElement('button');
+    btn.className = 'export-btn'; btn.textContent = 'CSV ' + pid;
+    btn.addEventListener('click', function() { exportCSV(pid); });
+    div.appendChild(btn);
+  });
+  var ab=document.createElement('button');
+  ab.id='addParamBtn';ab.textContent='+ 添加参数';
+  ab.addEventListener('click',function(){openAddModal();});
+  div.appendChild(ab);
+  var db=document.createElement('button');
+  db.className='export-btn';db.textContent='Download HTML';
+  db.addEventListener('click',function(){downloadHTML();});
+  div.appendChild(db);
+  stickyBar.appendChild(div);
+}
 
-  // Global search
-  var globalSearchBox = document.getElementById('globalSearch');
-  if (globalSearchBox) {
-    globalSearchBox.addEventListener('input', function() {
-      globalSearch(this.value);
-    });
-  }
+// ===== NEW: Back to Top =====
 
-  // Local search
-  var search = document.getElementById('search');
-  if (search) {
-    search.addEventListener('input', function() {
-      var pid = this.dataset.pid || '';
-      filterRows(pid, this.value);
+
+function initBackToTop() {
+  var btn = document.getElementById('backToTop'); if (!btn) return;
+  window.addEventListener('scroll', function() { btn.style.display = window.scrollY > 500 ? 'block' : 'none'; });
+}
+
+// ===== Add/Delete Parameter =====
+function openAddModal() {
+  var content = document.querySelector('.content.active');
+  if (!content) { alert('请先选择一个产品Tab'); return; }
+  document.getElementById('modalTitle').textContent = '添加参数到 ' + content.id;
+  document.getElementById('addParamModal').dataset.targetPid = content.id;
+  document.getElementById('addParamModal').classList.add('show');
+  document.getElementById('newParamName').value = '';
+  document.getElementById('newParamRange').value = '';
+  document.getElementById('newParamDesc').value = '';
+  document.getElementById('newParamExtra').value = '';
+  document.getElementById('newParamName').focus();
+}
+function closeModal() { document.getElementById('addParamModal').classList.remove('show'); }
+function showToast(msg) {
+  var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2000);
+}
+function insertParamRow(tbody, name, range, desc, extra) {
+  var tr = document.createElement('tr');
+  tr.style.background = '#e8f5e9';
+  tr.innerHTML = '<td>' + name + '</td><td>' + range + '</td><td>' + desc + '</td><td>' + extra + '</td>';
+  tbody.appendChild(tr);
+  tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(function() { tr.style.background = ''; }, 3000);
+  return tr;
+}
+function saveParam() {
+  var pid = document.getElementById('addParamModal').dataset.targetPid;
+  var name = document.getElementById('newParamName').value.trim();
+  var range = document.getElementById('newParamRange').value.trim();
+  var desc = document.getElementById('newParamDesc').value.trim();
+  var extra = document.getElementById('newParamExtra').value.trim();
+  if (!name) { alert('请输入参数名'); return; }
+  var content = document.getElementById(pid);
+  if (!content) return;
+  var tbody = content.querySelector('.param-table tbody');
+  if (!tbody) return;
+  insertParamRow(tbody, name, range, desc, extra);
+  saveAddedParams(pid);
+  closeModal();
+  showToast('已添加: ' + name + ' (已自动保存)');
+}
+
+// ===== localStorage 持久化 =====
+function saveAddedParams(pid) {
+  var content = document.getElementById(pid); if (!content) return;
+  var tbody = content.querySelector('.param-table tbody'); if (!tbody) return;
+  var rows = [];
+  tbody.querySelectorAll('tr.added-by-user').forEach(function(tr) {
+    var cells = tr.querySelectorAll('td');
+    if (cells.length >= 3) {
+      rows.push({name: cells[0].textContent, range: cells[1].textContent,
+                 desc: cells[2].textContent, extra: cells.length>3 ? cells[3].textContent : ''});
+    }
+  });
+  if (rows.length > 0) localStorage.setItem('wd-extra-' + pid, JSON.stringify(rows));
+  else localStorage.removeItem('wd-extra-' + pid);
+}
+function restoreAddedParams() {
+  document.querySelectorAll('.content').forEach(function(content) {
+    var pid = content.id;
+    var saved = localStorage.getItem('wd-extra-' + pid);
+    if (!saved) return;
+    var rows = JSON.parse(saved);
+    var tbody = content.querySelector('.param-table tbody');
+    if (!tbody) return;
+    rows.forEach(function(r) {
+      var tr = document.createElement('tr');
+      tr.className = 'added-by-user';
+      tr.innerHTML = '<td>' + r.name + '</td><td>' + r.range + '</td><td>' + r.desc + '</td><td>' + (r.extra||'') + '</td>';
+      tbody.appendChild(tr);
     });
-  }
-  var firstTab = document.querySelector('.tab');
-  if (firstTab) firstTab.click();
+  });
+}
+function insertParamRow(tbody, name, range, desc, extra) {
+  var tr = document.createElement('tr');
+  tr.className = 'added-by-user';
+  tr.style.background = '#e8f5e9';
+  tr.innerHTML = '<td>' + name + '</td><td>' + range + '</td><td>' + desc + '</td><td>' + extra + '</td>';
+  tbody.appendChild(tr);
+  tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(function() { tr.style.background = ''; }, 3000);
+  return tr;
+}
+function addDeleteButtons() {
+  document.querySelectorAll('.param-table tbody tr').forEach(function(row) {
+    if (row.querySelector('.delete-param-btn')) return;
+    var td = row.insertCell(-1);
+    if (!td) return;
+    var btn = document.createElement('button');
+    btn.className = 'delete-param-btn'; btn.innerHTML = 'X';
+    btn.title = '删除此行 (刷新可恢复)';
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (confirm('删除 ' + row.cells[0].textContent.trim() + ' ?\n(刷新页面可恢复)')) {
+        row.remove(); var pid=row.closest('.content').id; saveAddedParams(pid); showToast('已删除');
+      }
+    });
+    td.appendChild(btn);
+  });
+}
+function downloadHTML() {
+  var html = document.documentElement.outerHTML;
+  var blob = new Blob(['<!DOCTYPE html>\n' + html], {type: 'text/html'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'wd-params-updated.html'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('已下载: wd-params-updated.html');
+}
+
+// ===== Init =====
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.content').forEach(function(c) { ALL_PIDS.push(c.id); });
+  // Search
+  var gs = document.getElementById('globalSearch');
+  if (gs) { gs.addEventListener('input', function() { globalSearch(this.value); }); }
+  var ls = document.getElementById('search');
+  if (ls) { ls.addEventListener('input', function() { filterRows(this.dataset.pid || '', this.value); }); }
+  // Hash routing
+  var hash = window.location.hash.replace('#', '');
+  if (hash && ALL_PIDS.indexOf(hash) >= 0) { showTab(hash); }
+  else { var firstTab = document.querySelector('.tab'); if (firstTab) firstTab.click(); }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+  });
+  window.addEventListener('hashchange', function() {
+    var h = window.location.hash.replace('#', '');
+    if (h && ALL_PIDS.indexOf(h) >= 0) showTab(h);
+  });
+  // New features
+  makeHeadersSortable();
+  addExportButtons();
+  restoreAddedParams();
+  addDeleteButtons();
+  initBackToTop();
 });
 </script>
 </body>
